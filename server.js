@@ -8,7 +8,7 @@ const middlewares = jsonServer.defaults()
 server.use(jsonServer.defaults({ static: 'dist' }))
 
 const validator = (request, response, next) => {
-    console.log()
+    console.log('test')
 
     const { content } = request.body
 
