@@ -1,36 +1,40 @@
 name: Deployment pipeline
 
 env:
-  SKIP_CONDITION: ${{ contains(join(github.event.commits.*.message, ', '), '#skip') }}
+    SKIP_CONDITION: ${{ contains(join(github.event.commits.*.message, ', '), '#skip') }}
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+        types: [opened, synchronize]
 
 jobs:
-  deployment_pipeline:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: install dependencies
-        run: npm install
-      - name: lint
-        run: npm run lint
-      - name: build
-        run: npm run build
+    deployment_pipeline:
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+            - name: install dependencies
+              run: npm install
+            - name: lint
+              run: npm run lint
+            - name: build
+              run: npm run build
 
-  tag_release:
-    needs: [deployment_pipeline]
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@v1
-        if: ${{ github.event_name == 'push' && env.SKIP_CONDITION == 'false' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
+    tag_release:
+        needs: [deployment_pipeline]
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v4
+            - name: Bump version and push tag
+              uses: anothrNick/github-tag-action@v1
+              if: ${{ github.event_name == 'push' && env.SKIP_CONDITION == 'false' }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  DEFAULT_BUMP: patch
