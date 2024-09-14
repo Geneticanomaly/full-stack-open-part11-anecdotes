@@ -1,50 +1,50 @@
-import AnecdoteForm from './components/AnecdoteForm';
-import Notification from './components/Notification';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAnecdotes, updateAnecdote } from './requests';
-import { useNotificationDispatch } from './NotificationContext';
+import AnecdoteForm from './components/AnecdoteForm'
+import Notification from './components/Notification'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getAnecdotes, updateAnecdote } from './requests'
+import { useNotificationDispatch } from './hooks/notification/NotificationContext'
 
 const App = () => {
-    const queryClient = useQueryClient();
-    const dispatch = useNotificationDispatch();
+    const queryClient = useQueryClient()
+    const dispatch = useNotificationDispatch()
 
     const updateAnecdoteMutation = useMutation({
         mutationFn: updateAnecdote,
         onSuccess: (newAnecdote) => {
-            const anecdotes = queryClient.getQueryData(['anecdotes']);
+            const anecdotes = queryClient.getQueryData(['anecdotes'])
             const updatedAnecdotes = anecdotes.map((anecdote) =>
                 newAnecdote.id !== anecdote.id ? anecdote : newAnecdote
-            );
-            queryClient.setQueryData(['anecdotes'], updatedAnecdotes);
+            )
+            queryClient.setQueryData(['anecdotes'], updatedAnecdotes)
 
-            dispatch({ type: 'SHOW', payload: `Anecdote: '${newAnecdote.content} voted` });
+            dispatch({ type: 'SHOW', payload: `Anecdote: '${newAnecdote.content} voted` })
 
             setTimeout(() => {
-                dispatch({ type: 'HIDE' });
-            }, 5000);
+                dispatch({ type: 'HIDE' })
+            }, 5000)
         },
-    });
+    })
 
     const handleVote = (anecdote) => {
-        updateAnecdoteMutation.mutate(anecdote);
-    };
+        updateAnecdoteMutation.mutate(anecdote)
+    }
 
     const result = useQuery({
         queryKey: ['anecdotes'],
         queryFn: () => getAnecdotes(),
         retry: 1,
         refetchOnWindowFocus: false,
-    });
+    })
 
     if (result.isLoading) {
-        return <div>Loading data...</div>;
+        return <div>Loading data...</div>
     }
 
     if (result.isError) {
-        return <div>Anecdote service is not available due to problems in server</div>;
+        return <div>Anecdote service is not available due to problems in server</div>
     }
 
-    const anecdotes = result.data;
+    const anecdotes = result.data
 
     return (
         <div>
@@ -63,7 +63,7 @@ const App = () => {
                 </div>
             ))}
         </div>
-    );
-};
+    )
+}
 
-export default App;
+export default App
