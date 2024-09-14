@@ -4,6 +4,8 @@ const server = jsonServer.create()
 const router = jsonServer.router('db.json')
 const middlewares = jsonServer.defaults()
 
+server.use(jsonServer.defaults({ static: 'dist' }))
+
 const validator = (request, response, next) => {
   console.log()
 
@@ -24,5 +26,5 @@ server.use(validator)
 server.use(router)
 
 server.listen(3001, () => {
-  console.log('JSON Server is running')
+  console.log('Server is running on port 3001')
 })
